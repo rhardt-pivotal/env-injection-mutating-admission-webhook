@@ -1,0 +1,38 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: env-injector-webhook-deployment
+  namespace: ps-env-inject
+  labels:
+    app: env-injector
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: env-injector
+    spec:
+      serviceAccountName: env-injector
+      containers:
+        - name: env-injector
+          image: docker.io/rhardt/env-mutating-webhook2:v0.0.25
+          imagePullPolicy: Always
+          args:
+            - -tls-cert-file=/etc/webhook/certs/cert.pem
+            - -tls-private-key-file=/etc/webhook/certs/key.pem
+            - -env-cfg-file=/etc/webhook/config/envvarconfig.yaml
+            - -v=2
+          volumeMounts:
+            - name: webhook-certs
+              mountPath: /etc/webhook/certs
+              readOnly: true
+            - name: webhook-config
+              mountPath: /etc/webhook/config
+
+      volumes:
+        - name: webhook-certs
+          secret:
+            secretName: env-injector-webhook-certs
+        - name: webhook-config
+          configMap:
+            name: env-injector-webhook-configmap

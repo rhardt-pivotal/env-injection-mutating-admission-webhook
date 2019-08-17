@@ -1,0 +1,7 @@
+envVars:
+  - name: ROB_X
+    value: FOO
+  - name: ROB_Y
+    value: BAR
+  - name: ROB_Z
+    value: BAZ

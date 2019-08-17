@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -x
+set -o errexit
+dep ensure
+CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o env-webhook .
+docker build --no-cache -t docker.io/rhardt/env-mutating-webhook2:v0.0.25  .
+# rm -rf env-webhook
+
+docker push docker.io/rhardt/env-mutating-webhook2:v0.0.25
